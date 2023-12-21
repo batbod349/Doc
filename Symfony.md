@@ -66,6 +66,20 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 		                'expanded' => true
 		            ])
 		Chaque route aura sa propre request donc on met Request $request dans les paramètres #public function [NomController]Add(Request $request)
+	* Ajout du form dans le template
+		Ajouter chaque champs du form pour bien les placés
+			{{ form_start(form) }}
+			        <div>
+			            {{ form_row(form.name)}}
+			        </div>
+			        <div>
+			            {{ form_row(form.createdAt)}}
+			        </div>
+			        <div>
+			            {{ form_row(form.imagePath)}}
+			        </div>
+			        <button type="submit">Ajouter</button>
+			    {{ form_end(form) }}
 	* Fonctions utiles
 		Pour ajouter ou modifier des données  -> persist 
 		Pour supprimer des données -> remove 
@@ -127,4 +141,6 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 			        <li> {{ value }} </li>
 			    {% endfor %}
 			    </ul>
+	* Format
+		Pour formater une date : <p>Ajout le : {{ movieEntity.createdAt|date('d/m/Y')}}</p>
 
