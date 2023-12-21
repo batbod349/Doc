@@ -25,7 +25,9 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 	* Création des fichiers Yaml
 		Exécuter la commande 'composer require doctrine-orm' puis 'composer require --dev hautelook/alice-bundle' un dossier fixtures apparait dans le projet
 		Créer un fichier .Yaml pour chaques tables 
-				App\Entity\Movie:
+				
+			```yaml
+			App\Entity\Movie:
 			    movie{0..50}:
 			      name: "<name()>"
 			      created_at: "<dateTimeBetween('-20 years', 'now')>"
@@ -34,9 +36,10 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 			      image_path: "img/req1.png"
 			      category: "<numberBetween(1, 3)>x @category*" #FK relié a une liste donc choisit de 1 à 3 éléments de la table catégory
 			      studio: "@studio*" #FK
-		Une fois les fichiers .yaml remplis, exécuter la commande 'symfony console hautelook:fixtures:load --purge-with-truncate' #Cela supprime les données déjà dans la base
+			```Une fois les fichiers .yaml remplis, exécuter la commande 'symfony console hautelook:fixtures:load --purge-with-truncate' #Cela supprime les données déjà dans la base
 5. Utilisation des fonctions de DB
 	#Ajouter un constructeur
+	```php
 	use App\Entity\Movie;
 	use App\Form\MovieType;
 	use Doctrine\ORM\EntityManagerInterface;
@@ -44,17 +47,17 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 	 public function __construct(
 	        private MovieRepository $movieRepository,
 	        private EntityManagerInterface $entityManager,
-	    )
-	    {
-	    }
-		* SELECT
-			Pour SELECT dans la db, utiliser les fcts find() dans Repository/[NomTable] #Ne pas oublier d'ajouter 'use App\Repository\[NomTable]Repository;' dans le fichier d'utilisation de la fct
-		* ADD, REMOVE..
-			Pour ADD dans la db utiliser EntityManagerInterface #Ne pas oublier d'ajouter 'use Doctrine\ORM\EntityManagerInterface;' dans le fichier d'utilisation de la fct
+	    ) {}
+	```
+	* SELECT
+		Pour SELECT dans la db, utiliser les fcts find() dans Repository/[NomTable] #Ne pas oublier d'ajouter 'use App\Repository\[NomTable]Repository;' dans le fichier d'utilisation de la fct
+	* ADD, REMOVE..
+		Pour ADD dans la db utiliser EntityManagerInterface #Ne pas oublier d'ajouter 'use Doctrine\ORM\EntityManagerInterface;' dans le fichier d'utilisation de la fct
 6. Gestion des form
 	* Création d'un form
 		Exécuter la commande 'symfony console make:form' #La convention veut que le nom se termine par 'Type'
 	* Gestion du form
+		```php
 		->add('imagePath', TextType::class, [
 		                'label' => "Chemin de l'image"
 		            ])
@@ -65,9 +68,10 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 		                'multiple' => true,
 		                'expanded' => true
 		            ])
-		Chaque route aura sa propre request donc on met Request $request dans les paramètres #public function [NomController]Add(Request $request)
+		```Chaque route aura sa propre request donc on met Request $request dans les paramètres #public function [NomController]Add(Request $request)
 	* Ajout du form dans le template
 		Ajouter chaque champs du form pour bien les placés
+			```
 			{{ form_start(form) }}
 			        <div>
 			            {{ form_row(form.name)}}
@@ -80,13 +84,15 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 			        </div>
 			        <button type="submit">Ajouter</button>
 			    {{ form_end(form) }}
-	* Fonctions utiles
+			```* Fonctions utiles
 		Pour ajouter ou modifier des données  -> persist 
 		Pour supprimer des données -> remove 
 			Si on veut supprimer un éléments qui possède des relations on peut ajouter un paramètre dans sont fichier entity qui permet de supprimer automatiquement les données en relation avec lui, on mets ce paramètre dans la creation de la fonctions dans entity
-				#[ORM\OneToMany(mappedBy: 'owner', targetEntity: Animal::class, cascade: ['remove'])]
-					private Collection $animals;
-		Les fonctions qu'on utilise se mettent en file d'attentes il faut donc les flush() pour envoyer la requete 
+			```php
+			#[ORM\OneToMany(mappedBy: 'owner', targetEntity: Animal::class, cascade: ['remove'])]
+			private Collection $animals;
+			```Les fonctions qu'on utilise se mettent en file d'attentes il faut donc les flush() pour envoyer la requete 
+		```php
 		#[Route('/movie_add', name: 'app_movie_add')]
 		    public function ownerAdd(Request $request)
 		    {
@@ -94,22 +100,23 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 		        $form = $this->createForm(MovieType::class, $movieEntity);
 		        $form->handleRequest($request);
 		        if ($form->isSubmitted() && $form->isValid()) {
-		            _//persist notre owner_
+		            //persist notre owner
 		            $this->entityManager->persist($movieEntity);
-		            _//flush notre owner_
+		            //flush notre owner
 		            $this->entityManager->flush();
-		            _//redirection_
+		            //redirection
 		            return $this->redirectToRoute('app_movie_list');
 		        }
-		        _//l'object request reprend toutes les super globales de PHP ($GET, $POST)_
+		        //l'object request reprend toutes les super globales de PHP ($GET, $POST)
 		        return $this->render('movie/add.html.twig', [
 		            'form' => $form->createView(),
 		        ]);
 		    } 
-	### Informations utiles
+		```### Informations utiles
 	* Debug
 		Utiliser dump() on a l'apparition de la cible en bas à gauche de la fenetre dans le navigateur
 	* Exemple de use
+		```php
 		use App\Entity\Movie;
 		use App\Form\MovieType;
 		use Doctrine\ORM\EntityManagerInterface;
@@ -118,13 +125,14 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 		use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 		use Symfony\Component\HttpFoundation\Response;
 		use Symfony\Component\Routing\Annotation\Route;
-	* Route
+		```* Route
 		Chaque route a une partie URL et une partie code 
 			#[Route('/', name: 'app_home')]
 		Appeler une route via un bouton
 			<a href="{{ path('app_home') }}">Home</a>
 	* Controller
 		Pour envoyer une variable d'un controller à un template, créer la variable dans la fonction et l'envoyer via le return
+			```php
 			 public function index(): Response
 			    {
 			        $test = 'Bonjour !';
@@ -134,13 +142,14 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 			            'monArray' => $array
 			        ]);
 			    }
-		Pour récuperer la variable dans le template
+			```Pour récuperer la variable dans le template
+			```
 			 {{ mySuperVar }}
 			    <ul>
 			    {% for value in monArray %}
 			        <li> {{ value }} </li>
 			    {% endfor %}
 			    </ul>
-	* Format
+			```* Format
 		Pour formater une date : <p>Ajout le : {{ movieEntity.createdAt|date('d/m/Y')}}</p>
 
