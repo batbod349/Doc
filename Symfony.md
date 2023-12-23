@@ -56,6 +56,7 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 6. Gestion des form
 	* Création d'un form
 		Exécuter la commande 'symfony console make:form' #La convention veut que le nom se termine par 'Type'
+		Après avoir rentré le nom du formulaire le paramètre demandé correspond au nom de l'entity de votre base de données que vous voulez remplir avec ce form
 	* Gestion du form
 		```php
 		->add('imagePath', TextType::class, [
@@ -150,6 +151,7 @@ Entrer le nom de la table, ne pas ajouter de broadcast entity update Symfony UX 
 			        <li> {{ value }} </li>
 			    {% endfor %}
 			    </ul>
-			```* Format
+			```//Recuperer les infos d'un repo
+	* Format
 		Pour formater une date : <p>Ajout le : {{ movieEntity.createdAt|date('d/m/Y')}}</p>
 
